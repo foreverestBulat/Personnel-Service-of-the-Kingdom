@@ -1,4 +1,33 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser, Permission, Group
+
+
+class User(AbstractUser):
+    king = models.ForeignKey(
+        'King', 
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name='Король'
+    )
+    subject = models.ForeignKey(
+        'Subject',
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name='Подданный'
+    )
+    groups = models.ManyToManyField(
+        Group, related_name="app_user_groups", verbose_name=""
+    )
+    subject_permissions = models.ManyToManyField(
+        Permission, related_name="app_user_permissions"
+    )
+    
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+        
+    def __str__(self):
+        return f'{'Король' if self.king is not None else ('Подданный' if self.subject is not None else 'Пользователь')}: {self.username}'
 
 
 class Kingdom(models.Model):
@@ -49,6 +78,14 @@ class Subject(models.Model):
         verbose_name='Решенные тестовые испытания'
     )
     
+    # groups = models.ManyToManyField(
+    #     Group, related_name="app_subject_groups", verbose_name=""
+    # )
+    # subject_permissions = models.ManyToManyField(
+    #     Permission, related_name="app_subject_permissions"
+    # )
+
+    
     class Meta:
         verbose_name = 'Подданный'
         verbose_name_plural = 'Подданные'
@@ -95,6 +132,14 @@ class King(models.Model):
         default=None,
         verbose_name='Подданные'
     )
+    # groups = models.ManyToManyField(
+    #     Group, related_name="app_king_groups", verbose_name=""
+    # )
+    # king_permissions = models.ManyToManyField(
+    #     Permission, related_name="app_king_permissions"
+    # )
+
+    
     
     class Meta:
         verbose_name = 'Король'
