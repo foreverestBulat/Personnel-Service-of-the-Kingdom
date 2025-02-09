@@ -1,6 +1,4 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
-
 
 
 class Kingdom(models.Model):
@@ -12,12 +10,16 @@ class Kingdom(models.Model):
     code = models.CharField(
         max_length=255,
         null=False,
+        unique=True,
         verbose_name='Уникальный код королевства'
     )
     
     class Meta:
         verbose_name = 'Королевство'
         verbose_name_plural = 'Королевства'
+        
+    def __str__(self):
+        return self.code
 
 
 class Subject(models.Model):
@@ -38,15 +40,43 @@ class Subject(models.Model):
     )
     kingdom = models.ForeignKey(
         Kingdom, 
-        null=False, 
+        null=True, 
         on_delete=models.CASCADE, 
         verbose_name='Королевство'
+    )
+    solved_test_case = models.ManyToManyField(
+        'SolvedTestCase',
+        verbose_name='Решенные тестовые испытания'
     )
     
     class Meta:
         verbose_name = 'Подданный'
         verbose_name_plural = 'Подданные'
+        
+    def __str__(self):
+        return self.name
 
+
+class SolvedTestCase(models.Model):
+    class Status(models.TextChoices):
+        ENROLLED = 'Enrolled', 'Зачислен'
+        NOT_ENROLLED = 'Not enrolled', 'Не зачислен'
+    
+    answers = models.JSONField(
+        null=False,
+        verbose_name='Выбранные ответы'
+    )
+    solved_test = models.OneToOneField(
+        'CandidateTestTrial',
+        null=False,
+        on_delete=models.CASCADE,
+        verbose_name='Решенное тестовое задание'
+    )
+    status = models.CharField(
+        choices=Status.choices, 
+        null=True,
+        verbose_name='Статус зачисления'
+    )
 
 class King(models.Model):
     name = models.CharField(
@@ -54,11 +84,16 @@ class King(models.Model):
         null=False,
         verbose_name='Имя'
     )
-    kingdom = models.ForeignKey(
+    kingdom = models.OneToOneField(
         Kingdom,
-        null=False,
         on_delete=models.CASCADE,
         verbose_name='Королевство'
+    )
+    subjects = models.ManyToManyField(
+        Subject,
+        null=True,
+        default=None,
+        verbose_name='Подданные'
     )
     
     class Meta:
@@ -82,9 +117,15 @@ class Question(models.Model):
 
 
 class CandidateTestTrial(models.Model):
+    name_test = models.CharField(
+        max_length=255,
+        null=False,
+        verbose_name='Имя теста'
+    )
     kingdom_code = models.CharField(
         max_length=255,
         null=False,
+        unique=True,
         verbose_name='Уникальный код королевства'
     )
     kingdom = models.ForeignKey(
