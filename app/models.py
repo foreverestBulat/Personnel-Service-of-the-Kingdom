@@ -98,3 +98,7 @@ class CandidateTestTrial(models.Model):
         related_name='questions',
         verbose_name='Список вопросов'
     )
+    
+    class Meta:
+        verbose_name = 'Тестовое испытание кандидата'
+        verbose_name_plural = 'Тестовые испытания кандидатов'
