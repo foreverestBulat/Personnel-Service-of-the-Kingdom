@@ -1,14 +1,16 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
+
 
 
 class Kingdom(models.Model):
     name = models.CharField(
-        max_length=256,
+        max_length=255,
         null=False,
         verbose_name='Наименование'
     )
     code = models.CharField(
-        max_length=64,
+        max_length=255,
         null=False,
         verbose_name='Уникальный код королевства'
     )
@@ -20,7 +22,7 @@ class Kingdom(models.Model):
 
 class Subject(models.Model):
     name = models.CharField(
-        max_length=64, 
+        max_length=255, 
         null=False, 
         verbose_name='Имя'
     )
@@ -29,7 +31,7 @@ class Subject(models.Model):
         verbose_name='Возраст'
     )
     email = models.CharField(
-        max_length=256,
+        max_length=255,
         null=False,
         unique=True,
         verbose_name='Голубь (email)'
@@ -48,7 +50,7 @@ class Subject(models.Model):
 
 class King(models.Model):
     name = models.CharField(
-        max_length=64,
+        max_length=255,
         null=False,
         verbose_name='Имя'
     )
@@ -64,13 +66,24 @@ class King(models.Model):
         verbose_name_plural = 'Короли'
 
 
-# class Question(model.Models):
+class Question(models.Model):
+    text = models.TextField(
+        null=False,
+        verbose_name='Вопрос'
+    )
+    answer_options = models.JSONField(
+        null=False,
+        verbose_name='Варианты ответа'
+    )
     
+    class Meta:
+        verbose_name = 'Вопрос'
+        verbose_name_plural = 'Вопросы'
 
 
 class CandidateTestTrial(models.Model):
     kingdom_code = models.CharField(
-        max_length=64,
+        max_length=255,
         null=False,
         verbose_name='Уникальный код королевства'
     )
@@ -80,4 +93,8 @@ class CandidateTestTrial(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Королевство'
     )
-    # questions = models
+    questions = models.ManyToManyField(
+        'Question',
+        related_name='questions',
+        verbose_name='Список вопросов'
+    )
