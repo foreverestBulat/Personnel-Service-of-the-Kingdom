@@ -1,0 +1,15 @@
+<html>
+    <body>
+        <h1>Main</h1>
+
+        {% if user.is_anonymous %}
+        <div class="d-flex nav-underline">
+            <a href="{% url "auth" %}">Вход</a>
+        </div>
+        {% else %}
+        <div class="d-flex nav-underline">
+            <a href="{% url 'logout' %}">Выход</a>
+        </div>
+        {% endif %}
+    </body>
+</html>

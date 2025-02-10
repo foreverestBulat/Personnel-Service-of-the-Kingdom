@@ -77,15 +77,7 @@ class Subject(models.Model):
         'SolvedTestCase',
         verbose_name='Решенные тестовые испытания'
     )
-    
-    # groups = models.ManyToManyField(
-    #     Group, related_name="app_subject_groups", verbose_name=""
-    # )
-    # subject_permissions = models.ManyToManyField(
-    #     Permission, related_name="app_subject_permissions"
-    # )
 
-    
     class Meta:
         verbose_name = 'Подданный'
         verbose_name_plural = 'Подданные'
@@ -132,14 +124,6 @@ class King(models.Model):
         default=None,
         verbose_name='Подданные'
     )
-    # groups = models.ManyToManyField(
-    #     Group, related_name="app_king_groups", verbose_name=""
-    # )
-    # king_permissions = models.ManyToManyField(
-    #     Permission, related_name="app_king_permissions"
-    # )
-
-    
     
     class Meta:
         verbose_name = 'Король'
