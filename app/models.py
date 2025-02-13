@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser, Permission, Group
 
 
@@ -52,6 +53,10 @@ class Kingdom(models.Model):
 
 
 class Subject(models.Model):
+    class Status(models.TextChoices):
+        ENROLLED = 'Enrolled', 'Зачислен'
+        NOT_ENROLLED = 'Not enrolled', 'Не зачислен'
+        
     name = models.CharField(
         max_length=255, 
         null=False, 
@@ -73,9 +78,17 @@ class Subject(models.Model):
         on_delete=models.CASCADE, 
         verbose_name='Королевство'
     )
-    solved_test_case = models.ManyToManyField(
-        'SolvedTestCase',
-        verbose_name='Решенные тестовые испытания'
+    test_case = models.ForeignKey(
+        'TestCase',
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name='Тест кандидата'
+    )
+    status = models.CharField(
+        choices=Status.choices, 
+        null=True,
+        default=Status.NOT_ENROLLED,
+        verbose_name='Статус зачисления'
     )
 
     class Meta:
@@ -86,35 +99,39 @@ class Subject(models.Model):
         return self.name
 
 
-class SolvedTestCase(models.Model):
+class TestCase(models.Model):
     class Status(models.TextChoices):
-        ENROLLED = 'Enrolled', 'Зачислен'
-        NOT_ENROLLED = 'Not enrolled', 'Не зачислен'
+        SOLVED = 'Solved', 'Решенный'
+        NOT_SOLVED = 'Not solved', 'Не решенный'
     
     answers = models.JSONField(
-        null=False,
+        null=True,
         verbose_name='Выбранные ответы'
     )
-    solved_test = models.OneToOneField(
+    test = models.ForeignKey(
         'CandidateTestTrial',
         null=False,
         on_delete=models.CASCADE,
-        verbose_name='Решенное тестовое задание'
+        verbose_name='Тестовое задание'
     )
     status = models.CharField(
         choices=Status.choices, 
         null=True,
-        verbose_name='Статус зачисления'
+        default=Status.NOT_SOLVED,
+        verbose_name='Статус теста'
     )
 
 class King(models.Model):
+    MAX_SUBJECTS = 3
+    
     name = models.CharField(
         max_length=255,
         null=False,
         verbose_name='Имя'
     )
-    kingdom = models.OneToOneField(
+    kingdom = models.ForeignKey(
         Kingdom,
+        null=False,
         on_delete=models.CASCADE,
         verbose_name='Королевство'
     )
@@ -124,6 +141,11 @@ class King(models.Model):
         default=None,
         verbose_name='Подданные'
     )
+    
+    # def clean(self):
+    #     if self.subjects.count() > self.MAX_SUBJECTS:
+    #         raise ValidationError('Превышает лимит количества подданных.')
+    #     super().clean()
     
     class Meta:
         verbose_name = 'Король'
@@ -165,7 +187,7 @@ class CandidateTestTrial(models.Model):
     )
     questions = models.ManyToManyField(
         'Question',
-        related_name='questions',
+        # related_name='questions',
         verbose_name='Список вопросов'
     )
     

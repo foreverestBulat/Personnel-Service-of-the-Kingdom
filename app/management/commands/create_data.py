@@ -6,7 +6,8 @@ from app.models import (
     Subject,
     King,
     CandidateTestTrial,
-    Question
+    Question,
+    User,
 )
 
 
@@ -20,6 +21,16 @@ class Command(BaseCommand):
             name='Эддард Старк',
             kingdom=kingdom,
         )
+        (user, created) = User.objects.get_or_create(
+            email='eddard@stark.com',
+            username='Eddard Stark',
+            king=king,
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+
+        
         
         (subject, created) = Subject.objects.get_or_create(
             name='Джон Сноу',
@@ -27,17 +38,34 @@ class Command(BaseCommand):
             age=18,
             kingdom=kingdom,
         )
+        (user, created) = User.objects.get_or_create(
+            email='john@snow.com',
+            username='John Snow',
+            subject=subject
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
         (subject, created) = Subject.objects.get_or_create(
             name='Робб Старк',
             email='robb_stark@gmail.com',
             age=18,
             kingdom=kingdom,
         )
+        (user, created) = User.objects.get_or_create(
+            email='robb@stark.com',
+            username='Robb Stark',
+            subject=subject
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
         
         king.subjects.add(subject)
+        king.save()
         
         (test, created) = CandidateTestTrial.objects.get_or_create(
-            name_test='Рыцарь Короля',
+            name_test='Тест Короля',
             kingdom_code=kingdom.code,
             kingdom=kingdom
         )
@@ -47,14 +75,14 @@ class Command(BaseCommand):
                 'answer_options': {
                     1: 'Эддард Старк',
                     2: 'Джон Сноу',
-                    3: 'Рабберт Баратеон',
+                    3: 'Роберт Баратеон',
                     4: 'Дейенерис Таргариен'
                 },
                 'correct_answers': [1]
             }
         )
         test.questions.add(question)
-        (question, created) = Question.objects.get_or_create(
+        (question_joffry, created) = Question.objects.get_or_create(
             text='За что ты ненавидешь Джоффри Баратеона?',
             answer_options={
                 'answer_options': {
@@ -67,7 +95,8 @@ class Command(BaseCommand):
                 'correct_answers': [1, 2, 3, 4, 5]
             }
         )
-        test.questions.add(question)
+        test.questions.add(question_joffry)
+        test.save()
         
         
         
@@ -81,6 +110,40 @@ class Command(BaseCommand):
             name='Роберт Аррен',
             kingdom=kingdom
         )
+        (user, created) = User.objects.get_or_create(
+            email='robert@arren.com',
+            username='Robbert Arren',
+            king=king,
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+        
+        (test, created) = CandidateTestTrial.objects.get_or_create(
+            name_test='Тест Короля',
+            kingdom_code=kingdom.code,
+            kingdom=kingdom
+        )
+        (question, created) = Question.objects.get_or_create(
+            text='Кто ваш король?',
+            answer_options={
+                'answer_options': {
+                    1: 'Роберт Аррен',
+                    2: 'Джон Сноу',
+                    3: 'Роберт Баратеон',
+                    4: 'Дейенерис Таргариен'
+                },
+                'correct_answers': [1]
+            }
+        )
+        test.questions.add(question)
+        test.questions.add(question_joffry)
+        test.save()
+        
+        
+        
+        
+        
         
         (kingdom, created) = Kingdom.objects.get_or_create(
             name='Железные острова (дом Хоаров)',
@@ -90,6 +153,39 @@ class Command(BaseCommand):
             name='Харрен Хоар',
             kingdom=kingdom
         )
+        (user, created) = User.objects.get_or_create(
+            email='harren@hoar.com',
+            username='Harren Hoar',
+            king=king,
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+        
+        (test, created) = CandidateTestTrial.objects.get_or_create(
+            name_test='Тест Короля',
+            kingdom_code=kingdom.code,
+            kingdom=kingdom
+        )
+        (question, created) = Question.objects.get_or_create(
+            text='Кто ваш король?',
+            answer_options={
+                'answer_options': {
+                    1: 'Харрен Хоар',
+                    2: 'Джон Сноу',
+                    3: 'Роберт Баратеон',
+                    4: 'Дейенерис Таргариен'
+                },
+                'correct_answers': [1]
+            }
+        )
+        test.questions.add(question)
+        test.questions.add(question_joffry)
+        test.save()
+        
+        
+        
+        
         
         (kingdom, created) = Kingdom.objects.get_or_create(
             name = 'Королевство Утёса (дом Ланнистеров)',
@@ -99,6 +195,38 @@ class Command(BaseCommand):
             name='Тайвин Ланнистер',
             kingdom=kingdom
         )
+        (user, created) = User.objects.get_or_create(
+            email='taivin@lannister.com',
+            username='Taivin Lannister',
+            king=king,
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+        
+        (test, created) = CandidateTestTrial.objects.get_or_create(
+            name_test='Тест Короля',
+            kingdom_code=kingdom.code,
+            kingdom=kingdom
+        )
+        (question, created) = Question.objects.get_or_create(
+            text='Кто ваш король?',
+            answer_options={
+                'answer_options': {
+                    1: 'Тайвин Ланнистер',
+                    2: 'Джон Сноу',
+                    3: 'Роберт Баратеон',
+                    4: 'Дейенерис Таргариен'
+                },
+                'correct_answers': [1]
+            }
+        )
+        test.questions.add(question)
+        test.questions.add(question_joffry)
+        test.save()
+        
+        
+        
         
         (kingdom, created) = Kingdom.objects.get_or_create(
             name = 'Штормовые земли (дом Дюррандов)',
@@ -108,6 +236,40 @@ class Command(BaseCommand):
             name='Дюрран Богоборец',
             kingdom=kingdom
         )
+        (user, created) = User.objects.get_or_create(
+            email='durran@bogoborec.com',
+            username='Durran Bogoborec',
+            king=king,
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+        
+        (test, created) = CandidateTestTrial.objects.get_or_create(
+            name_test='Тест Короля',
+            kingdom_code=kingdom.code,
+            kingdom=kingdom
+        )
+        (question, created) = Question.objects.get_or_create(
+            text='Кто ваш король?',
+            answer_options={
+                'answer_options': {
+                    1: 'Дюрран Богоборец',
+                    2: 'Джон Сноу',
+                    3: 'Роберт Баратеон',
+                    4: 'Дейенерис Таргариен'
+                },
+                'correct_answers': [1]
+            }
+        )
+        test.questions.add(question)
+        test.questions.add(question_joffry)
+        test.save()
+        
+        
+        
+        
+        
         
         (kingdom, created) = Kingdom.objects.get_or_create(
             name = 'Королевство Простора (дом Гарденеров)',
@@ -117,6 +279,40 @@ class Command(BaseCommand):
             name='Гарт Гарденер',
             kingdom=kingdom
         )
+        (user, created) = User.objects.get_or_create(
+            email='gart@gardener.com',
+            username='Gart Gardener',
+            king=king,
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+        
+        (test, created) = CandidateTestTrial.objects.get_or_create(
+            name_test='Тест Короля',
+            kingdom_code=kingdom.code,
+            kingdom=kingdom
+        )
+        (question, created) = Question.objects.get_or_create(
+            text='Кто ваш король?',
+            answer_options={
+                'answer_options': {
+                    1: 'Гарт Гарденер',
+                    2: 'Джон Сноу',
+                    3: 'Роберт Баратеон',
+                    4: 'Дейенерис Таргариен'
+                },
+                'correct_answers': [1]
+            }
+        )
+        test.questions.add(question)
+        test.questions.add(question_joffry)
+        test.save()
+        
+        
+        
+        
+        
         
         (kingdom, created) = Kingdom.objects.get_or_create(
             name = 'Дорн (дом Мартеллов)',
@@ -126,3 +322,32 @@ class Command(BaseCommand):
             name='Доран Мартелл',
             kingdom=kingdom
         )
+        (user, created) = User.objects.get_or_create(
+            email='doran@martell.com',
+            username='Doran Martell',
+            king=king,
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+        
+        (test, created) = CandidateTestTrial.objects.get_or_create(
+            name_test='Тест Короля',
+            kingdom_code=kingdom.code,
+            kingdom=kingdom
+        )
+        (question, created) = Question.objects.get_or_create(
+            text='Кто ваш король?',
+            answer_options={
+                'answer_options': {
+                    1: 'Доран Мартелл',
+                    2: 'Джон Сноу',
+                    3: 'Роберт Баратеон',
+                    4: 'Дейенерис Таргариен'
+                },
+                'correct_answers': [1]
+            }
+        )
+        test.questions.add(question)
+        test.questions.add(question_joffry)
+        test.save()

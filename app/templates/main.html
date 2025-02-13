@@ -4,11 +4,57 @@
 
         {% if user.is_anonymous %}
         <div class="d-flex nav-underline">
-            <a href="{% url "auth" %}">Вход</a>
+            <a href="{% url 'auth' %}">Вход</a>
+        </div>
+        <div class="d-flex nav-underline">
+            <a href="{% url 'reg' %}">Регистрация</a>
         </div>
         {% else %}
         <div class="d-flex nav-underline">
             <a href="{% url 'logout' %}">Выход</a>
+        </div>
+        <div>
+            Главная. Вы: {{ user }}
+
+        </div>
+        <div>
+            {% if user.king != None %}
+                <div>
+                    {{ user.king.kingdom.name }}
+                </div>
+                <div>
+                    Ваши личные подданные:
+                    {% for subject in user.king.subjects.all %}
+                    <li>
+                        Subject: {{ subject.name }}. <a href="{% url 'delete_candidate' subject.id %}">Удалить</a>
+                    </li>
+                    {% endfor %}
+                </div>
+                Кандидаты:
+                {% for subject in tested_subjects %}
+                    <li>
+                        Subject: {{ subject.name }} |
+                        Статус теста:
+                        {% if subject.test_case != None %}
+                            {{ subject.test_case.get_status_display }}.
+                            <a href="{% url 'test_result' subject.id %}">Просмотреть</a>
+                            
+                        {% else %}
+                            Не решенный
+                        {% endif%}
+                    </li>
+                {% endfor %}
+            {% else %}
+                <div>
+                    Ваше королевство: {{ user.subject.kingdom.name }}
+                </div>
+                <div>
+                    Перейти решать <a href="{% url 'test' %}">тест</a> на подданного Короля
+                </div>
+                <div>
+                    Ваш статус на зачисление: {{ user.subject.status }}
+                </div>
+            {% endif %}
         </div>
         {% endif %}
     </body>

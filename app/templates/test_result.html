@@ -1,0 +1,33 @@
+<html>
+    <body>
+        <h1>Тест результаты</h1>
+
+        <div>
+            Кандидат: {{ subject.name }}
+        </div>
+        <div>
+            <h3>Тест</h3>
+            '+' обозначены верные ответы
+            {% for question in test %}
+                <div>
+                    {{ question.text }}
+                    {% for option in question.options %}
+                        <li>
+                            ({{ option.number }}) {{ option.answer }}
+                            {% if option.is_correct %}
+                                +
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                    Выбранные ответы кандидатом: {{ question.selected_answers }}
+                </div>
+            {% endfor %}
+        </div>
+        <div>
+            <a href="{% url 'add_candidate' subject.id %}">Добавить кандидата</a>
+        </div>
+        <div>
+            <a href="{% url 'main' %}">Назад</a>
+        </div>
+    </body>
+</html>
