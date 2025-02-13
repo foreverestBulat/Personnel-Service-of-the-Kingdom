@@ -19,5 +19,5 @@ urlpatterns = [
     path('test', TestView.as_view(), name='test'),
     path('test/result/<int:id>', CandidateResultView.as_view(), name='test_result'),
     path('candidate/add/<int:id>', AddCandidateForKing.as_view(), name='add_candidate'),
-    path('candidate/delete/<int:id>', DeleteCandidateForKing.as_view(), name='delete_candidate')
+    path('candidate/delete/<int:id>', DeleteCandidateForKing.as_view(), name='delete_candidate'),
 ]

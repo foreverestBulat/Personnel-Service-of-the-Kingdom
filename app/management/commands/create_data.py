@@ -61,7 +61,6 @@ class Command(BaseCommand):
             user.set_password('passwd')
             user.save()
         
-        king.subjects.add(subject)
         king.save()
         
         (test, created) = CandidateTestTrial.objects.get_or_create(

@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  app:
+    container_name: app
+    build: 
+      context: .
+      dockerfile: docker/Dockerfile
+    environment:
+      - DB_HOST=database
+      - DB_NAME=psotk
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_PORT=5432
+    ports:
+      - 8000:8000
+    depends_on:
+      - database
+    # volumes:
+    #   - static:/app/static
+    restart: always
+
+  database:
+    container_name: database
+    image: postgres:alpine
+    environment: 
+      - POSTGRES_HOST=localhost
+      - POSTGRES_DB=psotk
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      # - DB_NAME=psotk
+      # - DB_USER=postgres
+      # - DB_PASSWORD=postgres
+      # - DB_PORT=5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+
+volumes:
+  db:

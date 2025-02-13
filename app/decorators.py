@@ -1,12 +1,9 @@
-from django.core.cache import cache
-from django.shortcuts import redirect
-from django.http import HttpRequest
-from functools import wraps
-
-
-from functools import wraps
-from django.shortcuts import redirect
 from django.core.exceptions import PermissionDenied
+from django.core.cache import cache
+from django.http import HttpRequest
+from django.shortcuts import redirect
+from functools import wraps
+
 
 def role_required(role_name):
     def decorator(view_func):

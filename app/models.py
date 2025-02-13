@@ -90,6 +90,13 @@ class Subject(models.Model):
         default=Status.NOT_ENROLLED,
         verbose_name='Статус зачисления'
     )
+    king = models.ForeignKey(
+        'King',
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='subjects',
+        verbose_name="Король"
+    )
 
     class Meta:
         verbose_name = 'Подданный'
@@ -135,17 +142,22 @@ class King(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Королевство'
     )
-    subjects = models.ManyToManyField(
-        Subject,
-        null=True,
-        default=None,
-        verbose_name='Подданные'
-    )
+    # subjects = models.ManyToManyField(
+    #     Subject,
+    #     null=True,
+    #     default=None,
+    #     verbose_name='Подданные'
+    # )
+    
+    # def save(self, **kwargs):
+    #     self.clean()
+    #     return super(King, self).save(**kwargs)
     
     # def clean(self):
+    #     super(King, self).clean()
+    #     print('CLEAN MODEL')
     #     if self.subjects.count() > self.MAX_SUBJECTS:
-    #         raise ValidationError('Превышает лимит количества подданных.')
-    #     super().clean()
+    #         raise ValidationError('Превышен лимит количества подданных.')
     
     class Meta:
         verbose_name = 'Король'

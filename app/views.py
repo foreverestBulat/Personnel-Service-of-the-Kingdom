@@ -118,7 +118,6 @@ class TestView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'test.html'
     
-    # @method_decorator(login_required)
     @method_decorator(role_required('subject'))
     def get(self, request: HttpRequest):
             data = {}
@@ -143,15 +142,12 @@ class TestView(APIView):
                     'form': TestForm(test_trial.questions.all())
                 }
             return Response(data)
-        
-    # @method_decorator(login_required)
+    
     @method_decorator(role_required('subject'))
     def post(self, request):
-        print(request.POST)
         test_trial = CandidateTestTrial.objects.filter(kingdom_code=request.user.subject.kingdom.code).first()
         form = TestForm(test_trial.questions.all(), request.POST)
         if form.is_valid():
-            print(form.cleaned_data)
             answers = []
             for key, value in form.cleaned_data.items():
                 answers.append({
