@@ -142,22 +142,6 @@ class King(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Королевство'
     )
-    # subjects = models.ManyToManyField(
-    #     Subject,
-    #     null=True,
-    #     default=None,
-    #     verbose_name='Подданные'
-    # )
-    
-    # def save(self, **kwargs):
-    #     self.clean()
-    #     return super(King, self).save(**kwargs)
-    
-    # def clean(self):
-    #     super(King, self).clean()
-    #     print('CLEAN MODEL')
-    #     if self.subjects.count() > self.MAX_SUBJECTS:
-    #         raise ValidationError('Превышен лимит количества подданных.')
     
     class Meta:
         verbose_name = 'Король'

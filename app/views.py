@@ -1,4 +1,8 @@
+import logging
+import os
+import pandas as pd
 from django.http import HttpRequest
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -20,6 +24,8 @@ from app.forms import (
 from app.models import CandidateTestTrial, King, Subject, TestCase, User
 
 
+logger = logging.getLogger('custom_logger')
+
 class MainView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'main.html'
@@ -36,6 +42,7 @@ class MainView(APIView):
 
 @login_required
 def logout_user(request):
+    logger.info(f'Пользователь {request.user.username} разлогинился.')
     logout(request)
     return redirect('main')
 
@@ -79,6 +86,8 @@ class RegView(APIView):
             )
             user.set_password(form.cleaned_data["password1"])
             user.save()
+            
+            logger.info(f'Зарегистрировался новый пользователь: {user.username}')
             return redirect('auth')
             
         return Response({
@@ -107,6 +116,7 @@ class AuthView(APIView):
                 form.add_error(None, "Введены неверные данные")
             else:
                 login(request, user)
+                logger.info(f'Пользователь {request.user.username} авторизовался.')
                 return redirect('main')
         
         return Response({
@@ -159,6 +169,8 @@ class TestView(APIView):
             }
             request.user.subject.test_case.status = TestCase.Status.SOLVED
             request.user.subject.test_case.save()
+            logger.info(f'Пользователь {request.user.username} прошел тест')
+            
         return redirect('main')
 
         
@@ -204,6 +216,7 @@ class AddCandidateForKing(APIView):
         request.user.king.subjects.add(subject)
         request.user.king.save()
         subject.save()
+        logger.info(f'Пользователь {request.user.username} зачислил в подданные Короля пользователя {subject.name}.')
         return redirect('main')
     
 
@@ -212,7 +225,39 @@ class DeleteCandidateForKing(APIView):
     def get(self, request, id):
         subject = Subject.objects.get(id=id)
         subject.status = Subject.Status.NOT_ENROLLED
-        request.user.king.subjects.remove(subject)
-        request.user.king.save()
+        subject.king = None
         subject.save()
+        logger.info(f'Пользователь {request.user.username} удалил из подданных Короля пользователя {subject.name}.')
         return redirect('main')
+    
+
+def export_logs_to_excel(request):
+    log_file = "logs/django_actions.log"  # Путь к файлу логов
+
+    if not os.path.exists(log_file):
+        return HttpResponse("Файл логов не найден", status=404)
+
+    # Читаем логи
+    with open(log_file, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    # Парсим логи
+    data = []
+    for line in lines:
+        parts = line.strip().split(" ", 3)  # Разбиваем строку на части
+        if len(parts) < 4:
+            continue
+        level, timestamp, module, message = parts
+        data.append({"Level": level, "Timestamp": timestamp, "Module": module, "Message": message})
+
+    # Создаем DataFrame
+    df = pd.DataFrame(data)
+
+    # Генерируем Excel-файл
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response["Content-Disposition"] = 'attachment; filename="logs.xlsx"'
+
+    with pd.ExcelWriter(response, engine="openpyxl") as writer:
+        df.to_excel(writer, sheet_name="Logs", index=False)
+
+    return response

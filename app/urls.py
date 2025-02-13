@@ -5,6 +5,7 @@ from app.views import (
     CandidateResultView,
     DeleteCandidateForKing,
     TestView,
+    export_logs_to_excel,
     logout_user,    
     MainView,
     RegView,
@@ -20,4 +21,5 @@ urlpatterns = [
     path('test/result/<int:id>', CandidateResultView.as_view(), name='test_result'),
     path('candidate/add/<int:id>', AddCandidateForKing.as_view(), name='add_candidate'),
     path('candidate/delete/<int:id>', DeleteCandidateForKing.as_view(), name='delete_candidate'),
+    path('export-logs', export_logs_to_excel, name='export_logs'),
 ]
