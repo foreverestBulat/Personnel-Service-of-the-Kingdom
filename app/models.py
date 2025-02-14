@@ -51,6 +51,14 @@ class Kingdom(models.Model):
     def __str__(self):
         return self.code
 
+def restrict_amount(id):
+    if Subject.objects.filter(king_id=id).count() >= 3:
+        raise ValidationError('Team already has maximal amount of rounds (3)')
+    
+# @receiver(pre_save, sender=MyModel)
+# def validate_unique_across_foreign_key(sender, instance, **kwargs):
+#     if MyModel.objects.filter(related_model=instance.related_model).exists():
+#         raise ValidationError("Related model must be unique")
 
 class Subject(models.Model):
     class Status(models.TextChoices):
@@ -94,6 +102,7 @@ class Subject(models.Model):
         'King',
         on_delete=models.CASCADE,
         null=True,
+        validators=(restrict_amount,),
         related_name='subjects',
         verbose_name="Король"
     )

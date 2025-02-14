@@ -106,7 +106,6 @@ class AuthView(APIView):
         })
     
     def post(self, request):
-        print(request.POST)
         form = AuthForm(request.POST)
         if form.is_valid():
             username = request.POST["username"]
@@ -208,13 +207,14 @@ class CandidateResultView(APIView):
 class AddCandidateForKing(APIView):
     @method_decorator(role_required('king'))
     def get(self, request, id):
-        if request.user.king.subjects.count() + 1 > 3:
-            raise ValidationError(f"Количество подданных не может быть больше {self.MAX_SUBJECTS}")
+        # if request.user.king.subjects.count() + 1 > 3:
+        #     raise ValidationError(f"Количество подданных не может быть больше {self.MAX_SUBJECTS}")
         
         subject = Subject.objects.get(id=id)
         subject.status = Subject.Status.ENROLLED
-        request.user.king.subjects.add(subject)
-        request.user.king.save()
+        subject.king = request.user.king
+        # request.user.king.subjects.add(subject)
+        # request.user.king.save()
         subject.save()
         logger.info(f'Пользователь {request.user.username} зачислил в подданные Короля пользователя {subject.name}.')
         return redirect('main')
@@ -250,10 +250,8 @@ def export_logs_to_excel(request):
         level, timestamp, module, message = parts
         data.append({"Level": level, "Timestamp": timestamp, "Module": module, "Message": message})
 
-    # Создаем DataFrame
     df = pd.DataFrame(data)
 
-    # Генерируем Excel-файл
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = 'attachment; filename="logs.xlsx"'
 
