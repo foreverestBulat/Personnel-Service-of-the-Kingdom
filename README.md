@@ -1,5 +1,15 @@
 # Реализация
 
+
+Пример .env файла: 
+```
+DB_NAME = 'psotk'
+DB_USER = 'bulat'
+DB_PASSWORD = 'bulat'
+DB_HOST = 'localhost'
+DB_PORT = 5432
+```
+
 ## App
 Модели: User, Subject, King, Kingdom, TestCase, Question, CandidateTestTrial, Notification
 - У `User` две роли, которые определяются через проверку user.king is not None то King иначе Subject. Связаны через ForeignKey. Есть related поле `notfications` - уведомления
