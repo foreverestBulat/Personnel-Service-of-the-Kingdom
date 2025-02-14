@@ -132,6 +132,11 @@ class TestCase(models.Model):
         default=Status.NOT_SOLVED,
         verbose_name='Статус теста'
     )
+    
+    class Meta:
+        verbose_name = 'Тест кейс'
+        verbose_name_plural = 'Тест кейсы'
+
 
 class King(models.Model):
     MAX_SUBJECTS = 3
@@ -209,3 +214,7 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.user.username}"
+    
+    class Meta:
+        verbose_name = 'Уведомление'
+        verbose_name_plural = 'Уведомления'

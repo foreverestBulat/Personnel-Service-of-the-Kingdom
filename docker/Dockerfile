@@ -18,5 +18,3 @@ CMD python manage.py migrate && \
     python manage.py create_data && \ 
     uwsgi docker/uwsgi.ini --static-map /static=/work/static
 
-# RUN python src/manage.py collectstatic --noinput
-

@@ -16,8 +16,6 @@ services:
       - 8000:8000
     depends_on:
       - database
-    # volumes:
-    #   - static:/app/static
     restart: always
 
   database:
@@ -28,15 +26,10 @@ services:
       - POSTGRES_DB=psotk
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      # - DB_NAME=psotk
-      # - DB_USER=postgres
-      # - DB_PASSWORD=postgres
-      # - DB_PORT=5432
     volumes:
       - db:/var/lib/postgresql/data
     ports:
       - 5432:5432
-
 
 volumes:
   db:

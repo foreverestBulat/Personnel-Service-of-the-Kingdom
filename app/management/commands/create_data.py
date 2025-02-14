@@ -13,6 +13,21 @@ from app.models import (
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
+        
+        if not User.objects.filter(username='admin').exists():
+            # Создаем суперпользователя
+            admin_user = User.objects.create_superuser(
+                username='admin',
+                email='admin@example.com',
+            )
+            admin_user.set_password('admin')
+            admin_user.save()
+            print("Суперпользователь создан!")
+        else:
+            print("Суперпользователь уже существует!")
+        
+        
+        
         (kingdom, created) = Kingdom.objects.get_or_create(
             name='Королевство Севера (дом старков)',
             code='STARK'

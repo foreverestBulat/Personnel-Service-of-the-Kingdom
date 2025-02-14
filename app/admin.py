@@ -2,12 +2,20 @@ from django.contrib import admin
 
 # Register your models here.
 from app.models import (
+    User,
     Kingdom,
     Subject,
     King,
+    Question,
     CandidateTestTrial,
-    Question
+    TestCase,
+    Notification
 )
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'king_id', 'subject_id')
+    search_fields = ('username', 'email')
 
 
 @admin.register(Kingdom)
@@ -40,3 +48,16 @@ class CandidateTestTrialAdmin(admin.ModelAdmin):
     list_display = ('kingdom_code', 'kingdom')
     search_fields = ('kingdom_code',)
     
+    
+@admin.register(TestCase)
+class TestCaseAdmin(admin.ModelAdmin):
+    list_display = ('answers', 'test', 'status')
+    search_fields = ('id',)
+    list_filter = ('status',)
+    
+    
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'message', 'read', 'created_at')
+    search_fields = ('name', 'message')
+    list_filter = ('read',)
