@@ -1,14 +1,12 @@
 import logging
 import os
 import pandas as pd
+
 from django.http import HttpRequest
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-
-from django.core.exceptions import ValidationError
-
 from django.utils.decorators import method_decorator 
 
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -21,7 +19,12 @@ from app.forms import (
     RegistrationForm,
     TestForm
 )
-from app.models import CandidateTestTrial, King, Subject, TestCase, User
+from app.models import (
+    CandidateTestTrial, 
+    King, Notification, 
+    Subject, TestCase, 
+    User
+)
 
 
 logger = logging.getLogger('custom_logger')
@@ -36,6 +39,10 @@ class MainView(APIView):
             if request.user.king is not None:
                 data = {
                     'tested_subjects': Subject.objects.filter(kingdom=request.user.king.kingdom, status=Subject.Status.NOT_ENROLLED)
+                }
+            else:
+                data = {
+                    'unreading_notifications_exists': request.user.notifications.filter(read=False).exists()
                 }
         return Response(data)
 
@@ -207,14 +214,9 @@ class CandidateResultView(APIView):
 class AddCandidateForKing(APIView):
     @method_decorator(role_required('king'))
     def get(self, request, id):
-        # if request.user.king.subjects.count() + 1 > 3:
-        #     raise ValidationError(f"Количество подданных не может быть больше {self.MAX_SUBJECTS}")
-        
         subject = Subject.objects.get(id=id)
         subject.status = Subject.Status.ENROLLED
         subject.king = request.user.king
-        # request.user.king.subjects.add(subject)
-        # request.user.king.save()
         subject.save()
         logger.info(f'Пользователь {request.user.username} зачислил в подданные Короля пользователя {subject.name}.')
         return redirect('main')
@@ -232,19 +234,17 @@ class DeleteCandidateForKing(APIView):
     
 
 def export_logs_to_excel(request):
-    log_file = "logs/django_actions.log"  # Путь к файлу логов
+    log_file = "logs/django_actions.log"
 
     if not os.path.exists(log_file):
         return HttpResponse("Файл логов не найден", status=404)
 
-    # Читаем логи
     with open(log_file, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
-    # Парсим логи
     data = []
     for line in lines:
-        parts = line.strip().split(" ", 3)  # Разбиваем строку на части
+        parts = line.strip().split(" ", 3)
         if len(parts) < 4:
             continue
         level, timestamp, module, message = parts
@@ -259,3 +259,20 @@ def export_logs_to_excel(request):
         df.to_excel(writer, sheet_name="Logs", index=False)
 
     return response
+
+
+class NotificationsView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'notifications.html'
+    
+    @method_decorator(login_required)
+    def get(self, request):
+        notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+        for notification in notifications:
+            notification.read = True
+            notification.save()
+        
+        return Response({
+            'notifications': notifications
+        })
+        

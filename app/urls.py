@@ -4,6 +4,7 @@ from app.views import (
     AddCandidateForKing,
     CandidateResultView,
     DeleteCandidateForKing,
+    NotificationsView,
     TestView,
     export_logs_to_excel,
     logout_user,    
@@ -22,4 +23,5 @@ urlpatterns = [
     path('candidate/add/<int:id>', AddCandidateForKing.as_view(), name='add_candidate'),
     path('candidate/delete/<int:id>', DeleteCandidateForKing.as_view(), name='delete_candidate'),
     path('export-logs', export_logs_to_excel, name='export_logs'),
+    path('notifications', NotificationsView.as_view(), name='notifications')
 ]

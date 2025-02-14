@@ -55,10 +55,6 @@ def restrict_amount(id):
     if Subject.objects.filter(king_id=id).count() >= 3:
         raise ValidationError('Team already has maximal amount of rounds (3)')
     
-# @receiver(pre_save, sender=MyModel)
-# def validate_unique_across_foreign_key(sender, instance, **kwargs):
-#     if MyModel.objects.filter(related_model=instance.related_model).exists():
-#         raise ValidationError("Related model must be unique")
 
 class Subject(models.Model):
     class Status(models.TextChoices):
@@ -199,3 +195,17 @@ class CandidateTestTrial(models.Model):
     class Meta:
         verbose_name = 'Тестовое испытание кандидата'
         verbose_name_plural = 'Тестовые испытания кандидатов'
+        
+        
+class Notification(models.Model):
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='notifications'
+    )
+    message = models.CharField(max_length=255)
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.user.username}"

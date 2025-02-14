@@ -1,5 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
+# from django.db import IntegrityError
+from django.db import utils
 from app.models import CandidateTestTrial, Question, Kingdom, King, Subject, User, TestCase as MyTestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -236,3 +238,100 @@ class TestViewTests(TestCase):
             ]}
         )
 
+
+class KingModelTests(TestCase):
+    
+    def setUp(self):
+        (kingdom, created) = Kingdom.objects.get_or_create(
+            name='Королевство Севера (дом старков)',
+            code='STARK'
+        )
+        (king, created) = King.objects.get_or_create(
+            name='Эддард Старк',
+            kingdom=kingdom,
+        )
+        (user, created) = User.objects.get_or_create(
+            email='eddard@stark.com',
+            username='Eddard Stark',
+            king=king,
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+        
+        self.user_king = user    
+        
+        (subject, created) = Subject.objects.get_or_create(
+            name='Джон Сноу',
+            email='john_snow@gmail.com',
+            age=18,
+            kingdom=kingdom,
+        )
+        (user, created) = User.objects.get_or_create(
+            email='john@snow.com',
+            username='John Snow',
+            subject=subject
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+        self.user_subject_1 = user
+            
+        (subject, created) = Subject.objects.get_or_create(
+            name='Робб Старк',
+            email='robb_stark@gmail.com',
+            age=18,
+            kingdom=kingdom,
+        )
+        (user, created) = User.objects.get_or_create(
+            email='robb@stark.com',
+            username='Robb Stark',
+            subject=subject
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+        self.user_subject_2 = user
+            
+        (subject, created) = Subject.objects.get_or_create(
+            name='Санса Старк',
+            email='sansa_stark@gmail.com',
+            age=18,
+            kingdom=kingdom,
+        )
+        (user, created) = User.objects.get_or_create(
+            email='sansa_stark@gmail.com',
+            username='Sansa Stark',
+            subject=subject
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+        self.user_subject_3 = user
+            
+        (subject, created) = Subject.objects.get_or_create(
+            name='Санса Старк',
+            email='joffry_b@gmail.com',
+            age=18,
+            kingdom=kingdom,
+        )
+        (user, created) = User.objects.get_or_create(
+            email='joffry_b@gmail.com',
+            username='Joffry Barateon',
+            subject=subject
+        )
+        if created:
+            user.set_password('passwd')
+            user.save()
+        self.user_subject_4 = user
+            
+    def test_add_more_than_3_subjects(self):    
+        """
+        Проверяем, что король может добавить не более трех подданных
+        """
+        self.user_king.king.subjects.add(self.user_subject_1.subject)
+        self.user_king.king.subjects.add(self.user_subject_2.subject)
+        self.user_king.king.subjects.add(self.user_subject_3.subject)
+
+        with self.assertRaises(utils.InternalError):
+            self.user_king.king.subjects.add(self.user_subject_4.subject)

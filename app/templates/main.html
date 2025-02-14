@@ -14,7 +14,7 @@
             <a href="{% url 'logout' %}">Выход</a>
         </div>
         <div>
-            Главная. Вы: {{ user }}
+            Главная. Вы: {{ user }}.
 
         </div>
         <div>
@@ -45,6 +45,12 @@
                     </li>
                 {% endfor %}
             {% else %}
+                <div>
+                    <a href="{% url 'notifications' %}">Уведомления.</a> 
+                    {% if unreading_notifications_exists %}
+                        Есть новые уведомления
+                    {% endif %}
+                </div>
                 <div>
                     Ваше королевство: {{ user.subject.kingdom.name }}
                 </div>
