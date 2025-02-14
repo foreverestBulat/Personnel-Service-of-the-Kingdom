@@ -63,7 +63,7 @@ class RegViewTest(APITestCase):
 
         response = self.client.post(self.url, data)
 
-        self.assertEqual(response.status_code, status.HTTP_302_FOUND)  # ожидание редиректа
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
         subject = Subject.objects.get(name='TestSubject')
         self.assertEqual(subject.name, 'TestSubject')

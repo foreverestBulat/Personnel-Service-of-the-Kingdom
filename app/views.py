@@ -49,8 +49,8 @@ class MainView(APIView):
 
 @login_required
 def logout_user(request):
-    logger.info(f'Пользователь {request.user.username} разлогинился.')
     logout(request)
+    logger.info(f'Пользователь {request.user.username} разлогинился.')
     return redirect('main')
 
 
@@ -201,6 +201,7 @@ class CandidateResultView(APIView):
                     'answer': value,
                     'is_correct': is_correct
                 })
+
             if len(question_data) > 0:
                 data['test'].append({
                     'question_id': question.id,
@@ -257,6 +258,8 @@ def export_logs_to_excel(request):
 
     with pd.ExcelWriter(response, engine="openpyxl") as writer:
         df.to_excel(writer, sheet_name="Logs", index=False)
+        
+    logger.info(f'Пользователь {request.user.username} скачал логи.')
 
     return response
 
@@ -272,6 +275,7 @@ class NotificationsView(APIView):
             notification.read = True
             notification.save()
         
+        logger.info(f'Пользователь {request.user.username} прочитал уведомления.')
         return Response({
             'notifications': notifications
         })
